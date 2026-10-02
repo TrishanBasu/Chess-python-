@@ -34,25 +34,11 @@
             cursor: pointer;
         }
 
-        .square-light {
-            background-color: #f0d9b5;
-        }
-
-        .square-dark {
-            background-color: #b58863;
-        }
-
-        .square-selected {
-            background-color: #7b61ff !important;
-        }
-
-        .square-highlight-last {
-            background-color: rgba(255, 255, 50, 0.5) !important;
-        }
-
-        .square-highlight-check {
-            background-color: #ff4d4d !important;
-        }
+        .square-light { background-color: #f0d9b5; }
+        .square-dark { background-color: #b58863; }
+        .square-selected { background-color: #7b61ff !important; }
+        .square-highlight-last { background-color: rgba(255, 255, 50, 0.5) !important; }
+        .square-highlight-check { background-color: #ff4d4d !important; }
 
         .move-hint {
             position: absolute;
@@ -82,23 +68,11 @@
             transition: transform 0.15s ease-in-out;
         }
 
-        .piece:hover {
-            transform: scale(1.08);
-        }
+        .piece:hover { transform: scale(1.08); }
 
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 4px;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.3); border-radius: 4px; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between items-center p-2 sm:p-4">
@@ -106,7 +80,7 @@
     <header class="w-full max-w-5xl flex justify-between items-center py-3 px-4 bg-slate-800 rounded-xl shadow-lg border border-slate-700 mb-4">
         <div class="flex items-center gap-3">
             <i class="fa-solid font-bold text-2xl text-indigo-400 fa-chess-king"></i>
-            <h1 class="text-xl font-bold tracking-wide text-white">Grandmaster AI</h1>
+            <h1 class="text-xl font-bold tracking-wide text-white">Advanced AI Chess Engine</h1>
         </div>
         <div class="flex items-center gap-2">
             <span id="status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -117,7 +91,7 @@
 
     <main class="w-full max-w-5xl flex flex-col lg:flex-row gap-4 items-center lg:items-start justify-center flex-grow">
         
-        <!-- Left Column: Game Board -->
+        <!-- Left Column: Game Board & Clocks -->
         <div class="w-full max-w-[520px] flex flex-col gap-2">
             
             <!-- Top Player Bar (AI) -->
@@ -127,12 +101,18 @@
                         <i class="fa-solid fa-robot text-slate-300"></i>
                     </div>
                     <div>
-                        <div class="text-sm font-semibold text-slate-200" id="ai-name">Stockfish AI (Medium)</div>
+                        <div class="text-sm font-semibold text-slate-200" id="ai-name">AI Engine (Hard)</div>
                         <div class="text-xs text-slate-400 flex gap-1 h-4" id="ai-captured"></div>
                     </div>
                 </div>
-                <div id="ai-thinking" class="hidden text-xs text-indigo-400 font-medium flex items-center gap-1.5">
-                    <i class="fa-solid fa-spinner animate-spin"></i> Thinking...
+                <div class="flex items-center gap-3">
+                    <div id="ai-thinking" class="hidden text-xs text-indigo-400 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-spinner animate-spin"></i> Thinking...
+                    </div>
+                    <!-- AI Timer -->
+                    <div id="ai-timer" class="text-sm font-mono font-bold bg-slate-900 px-3 py-1 rounded border border-slate-700 text-amber-400">
+                        10:00
+                    </div>
                 </div>
             </div>
 
@@ -152,22 +132,38 @@
                         <div class="text-xs text-slate-400 flex gap-1 h-4" id="player-captured"></div>
                     </div>
                 </div>
+                <!-- Player Timer -->
+                <div id="player-timer" class="text-sm font-mono font-bold bg-slate-900 px-3 py-1 rounded border border-slate-700 text-emerald-400">
+                    10:00
+                </div>
             </div>
         </div>
 
-        <!-- Right Column: Sidebar Controls and Info -->
+        <!-- Right Column: Sidebar Controls -->
         <div class="w-full max-w-[520px] lg:w-80 flex flex-col gap-4">
             
-            <!-- Controls Panel -->
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col gap-3 shadow-md">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Game Configuration</h2>
                 
                 <div class="flex flex-col gap-1.5">
                     <label for="difficulty" class="text-xs text-slate-300">Difficulty Level</label>
                     <select id="difficulty" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-                        <option value="1">Easy (Depth 1)</option>
-                        <option value="2" selected>Medium (Depth 2)</option>
-                        <option value="3">Hard (Depth 3)</option>
+                        <option value="1">Beginner (Random Moves)</option>
+                        <option value="2">Easy (Depth 1)</option>
+                        <option value="3">Medium (Depth 2)</option>
+                        <option value="4" selected>Hard (Depth 3 + PST)</option>
+                        <option value="5">Expert (Depth 4 + Deep Evaluation)</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label for="time-control" class="text-xs text-slate-300">Time Control</label>
+                    <select id="time-control" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="60">1 Minute (Bullet)</option>
+                        <option value="180">3 Minutes (Blitz)</option>
+                        <option value="300">5 Minutes (Blitz)</option>
+                        <option value="600" selected>10 Minutes (Rapid)</option>
+                        <option value="0">No Timer (Unlimited)</option>
                     </select>
                 </div>
 
@@ -188,14 +184,13 @@
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col flex-grow shadow-md min-h-[220px]">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Move Notation</h2>
                 <div id="move-history" class="overflow-y-auto max-h-[240px] pr-2 text-sm text-slate-300 grid grid-cols-2 gap-x-4 gap-y-1 font-mono">
-                    <!-- Moves added dynamically -->
                 </div>
             </div>
         </div>
     </main>
 
     <footer class="w-full max-w-5xl text-center text-xs text-slate-500 py-3 mt-4">
-        Grandmaster AI Chess &bull; Single File Implementation with Minimax Engine
+        Advanced JS Engine &bull; Positional PST & Alpha-Beta Search
     </footer>
 
     <script>
@@ -215,14 +210,8 @@
         };
 
         class SoundFX {
-            constructor() {
-                this.ctx = null;
-            }
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-            }
+            constructor() { this.ctx = null; }
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
             playMove() {
                 this.init();
                 const osc = this.ctx.createOscillator();
@@ -232,10 +221,8 @@
                 osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.08);
                 gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.08);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.08);
             }
             playCapture() {
                 this.init();
@@ -246,10 +233,8 @@
                 osc.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.12);
                 gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.12);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.12);
             }
         }
         const sfx = new SoundFX();
@@ -260,18 +245,26 @@
         let isFlipped = false;
         let lastMove = null;
 
-        // Piece Values for Minimax Evaluation
+        // Clock Variables
+        let playerTime = 600;
+        let aiTime = 600;
+        let timerInterval = null;
+        let gameEnded = false;
+
+        // High-Precision Piece-Square Evaluation Tables (PST)
         const weights = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
+
         const pstPawn = [
             0,  0,  0,  0,  0,  0,  0,  0,
             50, 50, 50, 50, 50, 50, 50, 50,
             10, 10, 20, 30, 30, 20, 10, 10,
-            5,  5, 10, 25, 25, 10,  5,  5,
-            0,  0,  0, 20, 20,  0,  0,  0,
-            5, -5,-10,  0,  0,-10, -5,  5,
-            5, 10, 10,-20,-20, 10, 10,  5,
-            0,  0,  0,  0,  0,  0,  0,  0
+             5,  5, 10, 25, 25, 10,  5,  5,
+             0,  0,  0, 20, 20,  0,  0,  0,
+             5, -5,-10,  0,  0,-10, -5,  5,
+             5, 10, 10,-20,-20, 10, 10,  5,
+             0,  0,  0,  0,  0,  0,  0,  0
         ];
+
         const pstKnight = [
             -50,-40,-30,-30,-30,-30,-40,-50,
             -40,-20,  0,  0,  0,  0,-20,-40,
@@ -283,6 +276,50 @@
             -50,-40,-30,-30,-30,-30,-40,-50
         ];
 
+        const pstBishop = [
+            -20,-10,-10,-10,-10,-10,-10,-20,
+            -10,  0,  0,  0,  0,  0,  0,-10,
+            -10,  0,  5, 10, 10,  5,  0,-10,
+            -10,  5,  5, 10, 10,  5,  5,-10,
+            -10,  0, 10, 10, 10, 10,  0,-10,
+            -10, 10, 10, 10, 10, 10, 10,-10,
+            -10,  5,  0,  0,  0,  0,  5,-10,
+            -20,-10,-10,-10,-10,-10,-10,-20
+        ];
+
+        const pstRook = [
+              0,  0,  0,  0,  0,  0,  0,  0,
+              5, 10, 10, 10, 10, 10, 10,  5,
+             -5,  0,  0,  0,  0,  0,  0, -5,
+             -5,  0,  0,  0,  0,  0,  0, -5,
+             -5,  0,  0,  0,  0,  0,  0, -5,
+             -5,  0,  0,  0,  0,  0,  0, -5,
+             -5,  0,  0,  0,  0,  0,  0, -5,
+              0,  0,  0,  5,  5,  0,  0,  0
+        ];
+
+        const pstQueen = [
+            -20,-10,-10, -5, -5,-10,-10,-20,
+            -10,  0,  0,  0,  0,  0,  0,-10,
+            -10,  0,  5,  5,  5,  5,  0,-10,
+             -5,  0,  5,  5,  5,  5,  0, -5,
+              0,  0,  5,  5,  5,  5,  0, -5,
+            -10,  5,  5,  5,  5,  5,  0,-10,
+            -10,  0,  5,  0,  0,  0,  0,-10,
+            -20,-10,-10, -5, -5,-10,-10,-20
+        ];
+
+        const pstKing = [
+            -30,-40,-40,-50,-50,-40,-40,-30,
+            -30,-40,-40,-50,-50,-40,-40,-30,
+            -30,-40,-40,-50,-50,-40,-40,-30,
+            -30,-40,-40,-50,-50,-40,-40,-30,
+            -20,-30,-30,-40,-40,-30,-30,-20,
+            -10,-20,-20,-20,-20,-20,-20,-10,
+             20, 20,  0,  0,  0,  0, 20, 20,
+             20, 30, 10,  0,  0, 10, 30, 20
+        ];
+
         function evaluateBoard(board) {
             let total = 0;
             for (let r = 0; r < 8; r++) {
@@ -291,8 +328,15 @@
                     if (piece) {
                         let val = weights[piece.type];
                         let idx = r * 8 + c;
-                        if (piece.type === 'p') val += pstPawn[idx];
-                        if (piece.type === 'n') val += pstKnight[idx];
+                        let mirrorIdx = (7 - r) * 8 + c;
+
+                        if (piece.type === 'p') val += piece.color === 'w' ? pstPawn[mirrorIdx] : pstPawn[idx];
+                        else if (piece.type === 'n') val += piece.color === 'w' ? pstKnight[mirrorIdx] : pstKnight[idx];
+                        else if (piece.type === 'b') val += piece.color === 'w' ? pstBishop[mirrorIdx] : pstBishop[idx];
+                        else if (piece.type === 'r') val += piece.color === 'w' ? pstRook[mirrorIdx] : pstRook[idx];
+                        else if (piece.type === 'q') val += piece.color === 'w' ? pstQueen[mirrorIdx] : pstQueen[idx];
+                        else if (piece.type === 'k') val += piece.color === 'w' ? pstKing[mirrorIdx] : pstKing[idx];
+
                         total += piece.color === 'w' ? val : -val;
                     }
                 }
@@ -305,275 +349,12 @@
                 return evaluateBoard(game.board());
             }
 
-            const moves = game.moves();
+            // Move ordering: prioritizes captures for deeper pruning efficiency
+            const moves = game.moves({ verbose: true });
+            moves.sort((a, b) => (b.captured ? 10 : 0) - (a.captured ? 10 : 0));
+
             if (isMaximizing) {
                 let maxEval = -Infinity;
                 for (let move of moves) {
                     game.move(move);
-                    let evalVal = minimax(depth - 1, alpha, beta, false);
-                    game.undo();
-                    maxEval = Math.max(maxEval, evalVal);
-                    alpha = Math.max(alpha, evalVal);
-                    if (beta <= alpha) break;
-                }
-                return maxEval;
-            } else {
-                let minEval = Infinity;
-                for (let move of moves) {
-                    game.move(move);
-                    let evalVal = minimax(depth - 1, alpha, beta, true);
-                    game.undo();
-                    minEval = Math.min(minEval, evalVal);
-                    beta = Math.min(beta, evalVal);
-                    if (beta <= alpha) break;
-                }
-                return minEval;
-            }
-        }
-
-        function makeAIMove() {
-            if (game.game_over()) return;
-
-            document.getElementById('ai-thinking').classList.remove('hidden');
-
-            setTimeout(() => {
-                const depth = parseInt(document.getElementById('difficulty').value);
-                const moves = game.moves();
-                let bestMove = null;
-                let bestEval = Infinity;
-
-                for (let move of moves) {
-                    game.move(move);
-                    let evalVal = minimax(depth - 1, -Infinity, Infinity, true);
-                    game.undo();
-                    if (evalVal < bestEval) {
-                        bestEval = evalVal;
-                        bestMove = move;
-                    }
-                }
-
-                if (bestMove) {
-                    const moveObj = game.move(bestMove);
-                    lastMove = { from: moveObj.from, to: moveObj.to };
-                    if (moveObj.captured) sfx.playCapture();
-                    else sfx.playMove();
-                }
-
-                document.getElementById('ai-thinking').classList.add('hidden');
-                updateUI();
-            }, 100);
-        }
-
-        function renderBoard() {
-            const boardElem = document.getElementById('board');
-            boardElem.innerHTML = '';
-
-            const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-            const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
-
-            const rOrder = isFlipped ? ranks.slice().reverse() : ranks;
-            const fOrder = isFlipped ? files.slice().reverse() : files;
-
-            let inCheckSquare = null;
-            if (game.in_check()) {
-                const board = game.board();
-                const turn = game.turn();
-                for (let r = 0; r < 8; r++) {
-                    for (let c = 0; c < 8; c++) {
-                        const p = board[r][c];
-                        if (p && p.type === 'k' && p.color === turn) {
-                            inCheckSquare = files[c] + ranks[r];
-                        }
-                    }
-                }
-            }
-
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    const squareId = fOrder[c] + rOrder[r];
-                    const isLight = (files.indexOf(fOrder[c]) + ranks.indexOf(rOrder[r])) % 2 === 0;
-
-                    const sqElem = document.createElement('div');
-                    sqElem.className = `square ${isLight ? 'square-light' : 'square-dark'}`;
-                    sqElem.dataset.square = squareId;
-
-                    if (selectedSquare === squareId) {
-                        sqElem.classList.add('square-selected');
-                    }
-                    if (lastMove && (lastMove.from === squareId || lastMove.to === squareId)) {
-                        sqElem.classList.add('square-highlight-last');
-                    }
-                    if (squareId === inCheckSquare) {
-                        sqElem.classList.add('square-highlight-check');
-                    }
-
-                    // Draw Move Hints
-                    if (legalMoves.includes(squareId)) {
-                        const pieceAtSquare = game.get(squareId);
-                        const hint = document.createElement('div');
-                        hint.className = pieceAtSquare ? 'capture-hint' : 'move-hint';
-                        sqElem.appendChild(hint);
-                    }
-
-                    // Render Piece
-                    const piece = game.get(squareId);
-                    if (piece) {
-                        const pieceKey = piece.color + piece.type.toUpperCase();
-                        const pElem = document.createElement('div');
-                        pElem.className = 'piece';
-                        pElem.innerHTML = pieceSVG[pieceKey];
-                        sqElem.appendChild(pElem);
-                    }
-
-                    sqElem.addEventListener('click', () => handleSquareClick(squareId));
-                    boardElem.appendChild(sqElem);
-                }
-            }
-        }
-
-        function handleSquareClick(square) {
-            if (game.turn() === 'b' || game.game_over()) return;
-
-            if (selectedSquare === square) {
-                selectedSquare = null;
-                legalMoves = [];
-                renderBoard();
-                return;
-            }
-
-            if (selectedSquare) {
-                const move = game.move({
-                    from: selectedSquare,
-                    to: square,
-                    promotion: 'q'
-                });
-
-                if (move) {
-                    lastMove = { from: move.from, to: move.to };
-                    if (move.captured) sfx.playCapture();
-                    else sfx.playMove();
-
-                    selectedSquare = null;
-                    legalMoves = [];
-                    updateUI();
-
-                    if (!game.game_over()) {
-                        setTimeout(makeAIMove, 300);
-                    }
-                    return;
-                }
-            }
-
-            const piece = game.get(square);
-            if (piece && piece.color === 'w') {
-                selectedSquare = square;
-                const moves = game.moves({ square: square, verbose: true });
-                legalMoves = moves.map(m => m.to);
-            } else {
-                selectedSquare = null;
-                legalMoves = [];
-            }
-            renderBoard();
-        }
-
-        function updateUI() {
-            renderBoard();
-            updateHistory();
-            updateCaptured();
-            updateStatus();
-        }
-
-        function updateHistory() {
-            const histElem = document.getElementById('move-history');
-            const history = game.history({ verbose: true });
-            histElem.innerHTML = '';
-
-            for (let i = 0; i < history.length; i += 2) {
-                const moveNum = Math.floor(i / 2) + 1;
-                const whiteMove = history[i].san;
-                const blackMove = history[i + 1] ? history[i + 1].san : '';
-
-                const row = document.createElement('div');
-                row.className = 'col-span-2 grid grid-cols-5 hover:bg-slate-700/50 p-1 rounded';
-                row.innerHTML = `<span class="text-slate-500">${moveNum}.</span><span class="col-span-2 font-medium">${whiteMove}</span><span class="col-span-2 text-indigo-300 font-medium">${blackMove}</span>`;
-                histElem.appendChild(row);
-            }
-            histElem.scrollTop = histElem.scrollHeight;
-        }
-
-        function updateCaptured() {
-            const playerCap = document.getElementById('player-captured');
-            const aiCap = document.getElementById('ai-captured');
-            
-            playerCap.innerHTML = '';
-            aiCap.innerHTML = '';
-
-            const history = game.history({ verbose: true });
-            history.forEach(m => {
-                if (m.captured) {
-                    const capPiece = (m.color === 'w' ? 'b' : 'w') + m.captured.toUpperCase();
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'w-4 h-4 inline-block';
-                    wrapper.innerHTML = pieceSVG[capPiece];
-
-                    if (m.color === 'w') {
-                        playerCap.appendChild(wrapper);
-                    } else {
-                        aiCap.appendChild(wrapper);
-                    }
-                }
-            });
-        }
-
-        function updateStatus() {
-            const badge = document.getElementById('status-badge');
-            if (game.in_checkmate()) {
-                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30";
-                badge.innerText = `Checkmate! ${game.turn() === 'w' ? 'Black' : 'White'} Wins`;
-            } else if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition()) {
-                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30";
-                badge.innerText = "Game Over: Draw";
-            } else if (game.in_check()) {
-                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse";
-                badge.innerText = `${game.turn() === 'w' ? "White" : "Black"} in Check`;
-            } else {
-                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                badge.innerText = game.turn() === 'w' ? "White's Turn" : "AI Thinking...";
-            }
-        }
-
-        document.getElementById('btn-new-game').addEventListener('click', () => {
-            game.reset();
-            selectedSquare = null;
-            legalMoves = [];
-            lastMove = null;
-            updateUI();
-        });
-
-        document.getElementById('btn-flip').addEventListener('click', () => {
-            isFlipped = !isFlipped;
-            renderBoard();
-        });
-
-        document.getElementById('btn-undo').addEventListener('click', () => {
-            game.undo(); // Undo AI Move
-            game.undo(); // Undo Player Move
-            selectedSquare = null;
-            legalMoves = [];
-            lastMove = null;
-            updateUI();
-        });
-
-        document.getElementById('difficulty').addEventListener('change', (e) => {
-            const names = { '1': 'Easy', '2': 'Medium', '3': 'Hard' };
-            document.getElementById('ai-name').innerText = `Stockfish AI (${names[e.target.value]})`;
-        });
-
-        // Initialize First Render
-        window.onload = function() {
-            renderBoard();
-            updateUI();
-        };
-    </script>
-</body>
-</html>
+                    let evalVal = minimax(depth - 1, alpha, b
